@@ -8,6 +8,7 @@ SPADES = chr(9824)
 CLUBS = chr(9827)
 BACKSIDE = 'backside'
 
+
 def main():
     print(''' Rules: 
           Try to get as close to 21 without going over. 
@@ -38,6 +39,13 @@ def main():
         while True:  # keep looping until player stands or busts
             displayHands(playerHand, dealerHand, False)
             print()
+
+            # if the player bust
+            if getHandValue(playerHand) > 21:
+                break
+
+            # get the player's move (H / S / D)
+            move = getMove(playerHand, money - bet)
 
 
 # ask the players how much they want to bet for this round
@@ -100,28 +108,46 @@ def displayHands(playerHand, dealerHand, showDealerHand):
     if showDealerHand:
         print('Dealer', getHandValue(dealerHand))
         displayCards(dealerHand)
+    else:
+        print('Dealer: ???')
+        displayCards([BACKSIDE] + dealerHand[1:])
+
+    print('Player:', getHandValue(playerHand))
+    displayCards(playerHand)
 
 
 def displayCards(cards):
-    rows = ['','','','']
-    
-    for i,card in enumerate(cards):
+    rows = ['', '', '', '']
+
+    for i, card in enumerate(cards):
         rows[0] += ' __ '
         if card == BACKSIDE:
             rows[1] += '|## | '
             rows[2] += '|###| '
             rows[3] += '|_##| '
         else:
-            rank,suit = card
+            rank, suit = card
             rows[1] += '|{} | '.format(rank.ljust(2))
-            rows[2] += '| {} | '.format(suit) 
+            rows[2] += '| {} | '.format(suit)
             rows[3] += '|_{}| '.format(rank.rjust(2, '_'))
 
     for row in rows:
-        print(row) 
+        print(row)
 
 
+def getMove(playerHand, money):
+    while True:
+        moves = ['(H)it','(S)tand']
 
+        if len(playerHand) == 2 and money > 0:
+            moves.append('(D)ouble down')
+        
+        movePromt = ', '.join(moves) + '> '
+        move = input(movePromt).upper()
+        if move in ('H','S'):
+            return move
+        if move == 'D':
+            return move
 
 if __name__ == '__main__':
     main()
