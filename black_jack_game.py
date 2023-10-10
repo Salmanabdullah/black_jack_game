@@ -47,6 +47,56 @@ def main():
             # get the player's move (H / S / D)
             move = getMove(playerHand, money - bet)
 
+            # handle player actions
+            if move == 'D':
+                additionalBet = getBet(min(bet, (money - bet)))
+                bet += additionalBet
+                print('Bet increased to {}.'.format(bet))
+                print('Bet: ', bet)
+
+            if move in ('H', 'D'):
+                newCard = deck.pop()
+                rank, suit = newCard
+                print('You drew a {} of {}.'.format(rank, suit))
+                playerHand.append(newCard)
+
+                if getHandValue(playerHand) > 21:
+                    continue
+
+            if move in ('S', 'D'):
+                break
+
+            # dealer actions
+            if getHandValue(playerHand) <= 21:
+                while getHandValue(dealerHand) < 17:
+                    print('Dealer hits...')
+                    dealerHand.append(deck.pop())
+                    displayCards(playerHand, dealerHand, False)
+
+                    if getHandValue(dealerHand) > 21:
+                        break
+                    input('Press Enter to continue...')
+                    print('\n\n')
+
+            # show the final hands
+            displayCards(playerHand, dealerHand, True)
+
+            playerValue = getHandValue(playerHand)
+            dealerValue = getHandValue(dealerHand)
+
+            # game result
+            if dealerValue > 21:
+                print('Dealer busts! You won ${}.'.format(bet))
+                money += bet
+            elif (playerValue > 21) or (playerValue < dealerValue):
+                print('You lost')
+                money -= bet
+            elif playerValue == dealerValue:
+                print('TIE !. You bet money is returned to you.')
+
+            input('Press Enter to continue...')
+            print('\n\n')
+
 
 # ask the players how much they want to bet for this round
 def getBet(maxBet):
@@ -137,17 +187,18 @@ def displayCards(cards):
 
 def getMove(playerHand, money):
     while True:
-        moves = ['(H)it','(S)tand']
+        moves = ['(H)it', '(S)tand']
 
         if len(playerHand) == 2 and money > 0:
             moves.append('(D)ouble down')
-        
+
         movePromt = ', '.join(moves) + '> '
         move = input(movePromt).upper()
-        if move in ('H','S'):
+        if move in ('H', 'S'):
             return move
         if move == 'D':
             return move
+
 
 if __name__ == '__main__':
     main()
