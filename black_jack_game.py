@@ -6,7 +6,7 @@ HEARTS = chr(9829)
 DIAMONDS = chr(9830)
 SPADES = chr(9824)
 CLUBS = chr(9827)
-
+BACKSIDE = 'backside'
 
 def main():
     print(''' Rules: 
@@ -94,6 +94,33 @@ def getHandValue(cards):
             value += 10
 
     return value
+
+
+def displayHands(playerHand, dealerHand, showDealerHand):
+    if showDealerHand:
+        print('Dealer', getHandValue(dealerHand))
+        displayCards(dealerHand)
+
+
+def displayCards(cards):
+    rows = ['','','','']
+    
+    for i,card in enumerate(cards):
+        rows[0] += ' __ '
+        if card == BACKSIDE:
+            rows[1] += '|## | '
+            rows[2] += '|###| '
+            rows[3] += '|_##| '
+        else:
+            rank,suit = card
+            rows[1] += '|{} | '.format(rank.ljust(2))
+            rows[2] += '| {} | '.format(suit) 
+            rows[3] += '|_{}| '.format(rank.rjust(2, '_'))
+
+    for row in rows:
+        print(row) 
+
+
 
 
 if __name__ == '__main__':
