@@ -13,31 +13,39 @@ def main():
     print(''' Rules: 
           Try to get as close to 21 without going over. 
           Kings, Queens, and Jacks are worth 10 points. 
-          Aces are worth 1 or 11 points. Cards 2 through 10 are worth their face value. 
+          Aces are worth 1 or 11 points.
+          Cards 2 through 10 are worth their face value. 
           (H)it to take another card. (S)tand to stop taking cards. 
-          On your first play, you can (D)ouble down to increase your bet but must hit exactly one more time before standing. 
+          On your first play, you can (D)ouble down to increase your bet 
+          but must hit exactly one more time before standing. 
+          
           In case of a tie, the bet is returned to the player. The dealer stops hitting at 17. ''')
 
     money = 5000
     while True:  # main game loop
-        if money < 0:
+        if money <= 0:
             # check if the player has run out money.
             print("You're broke!")
             sys.exit()
 
         # let players to play one round
         print('Money: ', money)
+
         bet = getBet(money)
 
         # give dealer and player two cards from the deck
         deck = getDeck()
         playerHand = [deck.pop(), deck.pop()]
+        
         dealerHand = [deck.pop(), deck.pop()]
 
         # handle player actions
         print('bet: ', bet)
+        print('\n')
         while True:  # keep looping until player stands or busts
-            displayHands(playerHand, dealerHand, False)
+            print('-------------------------------------------------------------')
+            displayHands(playerHand,dealerHand, False)
+            print('-------------------------------------------------------------')
             print()
 
             # if the player bust
@@ -66,36 +74,36 @@ def main():
             if move in ('S', 'D'):
                 break
 
-            # dealer actions
-            if getHandValue(playerHand) <= 21:
-                while getHandValue(dealerHand) < 17:
-                    print('Dealer hits...')
-                    dealerHand.append(deck.pop())
-                    displayCards(playerHand, dealerHand, False)
+        # dealer actions
+        if getHandValue(playerHand) <= 21:
+            while getHandValue(dealerHand) < 17:
+                print('Dealer hits...')
+                dealerHand.append(deck.pop())
+                displayHands(playerHand, dealerHand, False)
 
-                    if getHandValue(dealerHand) > 21:
-                        break
-                    input('Press Enter to continue...')
-                    print('\n\n')
+                if getHandValue(dealerHand) > 21:
+                    break
+                input('Press Enter to continue...')
+                print('\n\n')
 
-            # show the final hands
-            displayCards(playerHand, dealerHand, True)
+        # show the final hands
+        displayHands(playerHand, dealerHand, True)
 
-            playerValue = getHandValue(playerHand)
-            dealerValue = getHandValue(dealerHand)
+        playerValue = getHandValue(playerHand)
+        dealerValue = getHandValue(dealerHand)
 
-            # game result
-            if dealerValue > 21:
-                print('Dealer busts! You won ${}.'.format(bet))
-                money += bet
-            elif (playerValue > 21) or (playerValue < dealerValue):
-                print('You lost')
-                money -= bet
-            elif playerValue == dealerValue:
+        # game result
+        if dealerValue > 21:
+            print('Dealer busts! You won ${}.'.format(bet))
+            money += bet
+        elif (playerValue > 21) or (playerValue < dealerValue):
+            print('You lost')
+            money -= bet
+        elif playerValue == dealerValue:
                 print('TIE !. You bet money is returned to you.')
 
-            input('Press Enter to continue...')
-            print('\n\n')
+        input('Press Enter to continue...')
+        print('\n\n')
 
 
 # ask the players how much they want to bet for this round
@@ -121,9 +129,9 @@ def getDeck():
     deck = []
     for suit in (HEARTS, DIAMONDS, SPADES, CLUBS):
         for rank in range(2, 11):
-            deck.append(str(rank), suit)  # add the numbered cards
+            deck.append((str(rank), suit))  # add the numbered cards
         for rank in ('A', 'K', 'Q', 'J'):
-            deck.append(rank, suit)              # add rest of the cards
+            deck.append((rank, suit))              # add rest of the cards
     random.shuffle(deck)
     return deck
 
@@ -161,13 +169,13 @@ def displayHands(playerHand, dealerHand, showDealerHand):
     else:
         print('Dealer: ???')
         displayCards([BACKSIDE] + dealerHand[1:])
-
+    print('-------------------------------------------------------------')
     print('Player:', getHandValue(playerHand))
     displayCards(playerHand)
 
 
 def displayCards(cards):
-    rows = ['', '', '', '']
+    rows = ['', '', '', '', '']
 
     for i, card in enumerate(cards):
         rows[0] += ' __ '
